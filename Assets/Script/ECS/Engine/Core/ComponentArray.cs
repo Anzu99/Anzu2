@@ -1,15 +1,15 @@
 using System;
 
-public class ComponentArray<T> where T : struct, IComponentData
+public class ComponentArray
 {
     public short count;
     public short[] entitiesID;
-    public T[] components;
+    public IComponentData[] components;
 
     public ComponentArray(ushort _maxCapacity)
     {
         count = 0;
-        components = new T[_maxCapacity];
+        components = new IComponentData[_maxCapacity];
         entitiesID = new short[ConfigCapacity.MaxEnities];
         Array.Fill(entitiesID, (short)-1);
     }
@@ -25,7 +25,7 @@ public class ComponentArray<T> where T : struct, IComponentData
         {
             if (count >= components.Length)
             {
-                UnityEngine.Debug.LogError($"Component array {typeof(T)} Overload, config capacity {typeof(T)} to fix");
+                // UnityEngine.Debug.LogError($"Component array Overload, config capacity {typeof(T)} to fix");
             }
             else
             {

@@ -1,3 +1,4 @@
+
 public partial class SystemManager
 {
     public partial void CreateSystem(params ESystem[] systems)
@@ -7,12 +8,6 @@ public partial class SystemManager
             SystemBase systemBase = null;
             switch (item)
             {
-                case ESystem.InputSystem:
-                    systemBase = new InputSystem();
-                    break;
-                case ESystem.MoveSystem:
-                    systemBase = new MoveSystem();
-                    break;
             }
             systemBase.Start();
             listSystem.Add(systemBase);
@@ -23,6 +18,4 @@ public partial class SystemManager
 
 public enum ESystem
 {
-    InputSystem,
-    MoveSystem,
 }

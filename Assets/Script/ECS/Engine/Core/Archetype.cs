@@ -1,44 +1,28 @@
 public class Archetype
 {
     public Flag flag;
-    public ushort count;
-    public ushort[] entities;
-    public ushort[] indice;
+    ArchetypeChunk[] archetypeChunks;
+    public ushort chunkSize;
+
 
     public Archetype(Flag flag)
     {
-        indice = new ushort[ConfigCapacity.MaxEnities];
-        entities = new ushort[ConfigCapacity.MaxEnities];
-        this.flag = flag;
-        count = 0;
+
     }
 
     public void AddEntity(ushort idEntity)
     {
-        entities[++count] = idEntity;
-        indice[idEntity] = count;
+
     }
 
     public void RemoveEntity(ushort idEntity)
     {
-        ushort tmp = entities[count];
-        entities[indice[idEntity]] = tmp;
-        entities[count] = 0;
-        if (--count <= 0)
-        {
-            World.archetypeManager.RemoveArchetype(this);
-            RemoveArchetype();
-        }
+
     }
 
     public void RemoveArchetype()
     {
         flag.Clear();
-        for (var i = 0; i < count; i++)
-        {
-            entities[i] = 0;
-            indice[i] = 0;
-        }
     }
 
     public bool ContainFlag(Flag otherFlag)
@@ -49,4 +33,24 @@ public class Archetype
     {
         return flag.Equal(otherFlag);
     }
+}
+
+
+public class ArchetypeChunk
+{
+    public ArchetypeChunk()
+    {
+
+    }
+
+    private void CreateComponentArray()
+    {
+
+    }
+    private void CreateEntity()
+    {
+        
+    }
+    ComponentArray[] componentArrays;
+    public Entity[] entities;
 }

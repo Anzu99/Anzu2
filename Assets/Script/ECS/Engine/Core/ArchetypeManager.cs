@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 
 public class ArchetypeManager
 {
@@ -73,10 +75,8 @@ public class ArchetypeManager
         archetypes[count] = new Archetype(flag);
         return archetypes[count++];
     }
-}
 
 
-public class ArchetypeChunk
-{
 
 }
+

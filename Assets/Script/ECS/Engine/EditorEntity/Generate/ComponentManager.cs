@@ -6,12 +6,6 @@ public partial class ComponentManager
         ushort _maxCapacity = GetCapacity(flag);
         switch (flag)
         {
-            case Component.InfoComponent:
-                CreateComponentArray<InfoComponent>(_maxCapacity, flag);
-                break;
-            case Component.MovementComponent:
-                CreateComponentArray<MovementComponent>(_maxCapacity, flag);
-                break;
         }
     }
         
@@ -19,12 +13,6 @@ public partial class ComponentManager
     {
         switch (component)
         {
-            case Component.InfoComponent:
-                RemoveComponent<InfoComponent>(component, idEntity);
-                break;
-            case Component.MovementComponent:
-                RemoveComponent<MovementComponent>(component, idEntity);
-                break;
         }
     }
         
@@ -32,8 +20,6 @@ public partial class ComponentManager
     {
         return flag switch
         {  
-            Component.InfoComponent => 32,
-            Component.MovementComponent => 32,
             _ => 32
         };
     }
@@ -42,14 +28,6 @@ public partial class ComponentManager
     {
         switch (flag)
         {
-            case Component.InfoComponent:
-                ComponentArray<InfoComponent> InfoComponents = dicsComponent[flag] as ComponentArray<InfoComponent>;
-                InfoComponents.CreateComponent(idEntity);
-                break;
-            case Component.MovementComponent:
-                ComponentArray<MovementComponent> MovementComponents = dicsComponent[flag] as ComponentArray<MovementComponent>;
-                MovementComponents.CreateComponent(idEntity);
-                break;
         }
     }
         
@@ -57,14 +35,6 @@ public partial class ComponentManager
     {
         switch (component)
         {
-            case Component.InfoComponent:
-                ComponentArray<InfoComponent> InfoComponents = dicsComponent[component] as ComponentArray<InfoComponent>;
-                InfoComponents.InitializeComponent(idEntity);
-                break;
-            case Component.MovementComponent:
-                ComponentArray<MovementComponent> MovementComponents = dicsComponent[component] as ComponentArray<MovementComponent>;
-                MovementComponents.InitializeComponent(idEntity);
-                break;
         }
     }
 }
@@ -73,7 +43,5 @@ public partial class ComponentManager
 public enum Component
 {
     None,
-    InfoComponent,
-    MovementComponent,
 }
         

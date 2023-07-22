@@ -11,17 +11,7 @@ public partial class EntityPrefab : SerializedMonoBehaviour
         CheckShowComponent();
     }
         
-    [ColoredFoldoutGroup(Component.MovementComponent, .5f, .5f, .5f, 1), HideLabel, PropertyOrder(0)]
-    [ShowIf("isShowMovementComponent", true), ShowInInspector]
-    private MovementComponent MovementComponent;
     
-    [ColoredFoldoutGroup(Component.InfoComponent, .5f, .5f, .5f, 1), HideLabel, PropertyOrder(1)]
-    [ShowIf("isShowInfoComponent", true), ShowInInspector]
-    private InfoComponent InfoComponent;
-    
-    
-    private bool isShowMovementComponent = false;
-    private bool isShowInfoComponent = false;
     [HideInInspector] public List<Component> flags;
     [HideInInspector] public List<object> componentDatas;
     
@@ -50,8 +40,6 @@ public partial class EntityPrefab : SerializedMonoBehaviour
     public static Component[] ListComponent = new Component[]
     {
         Component.None,
-        Component.MovementComponent,
-        Component.InfoComponent,
     };
     public static object entityPrefabCache;
     
@@ -59,12 +47,6 @@ public partial class EntityPrefab : SerializedMonoBehaviour
     {
         switch (component)
         {
-            case Component.MovementComponent:
-                entityPrefabCache = MovementComponent;
-                break;
-            case Component.InfoComponent:
-                entityPrefabCache = InfoComponent;
-                break;
         }
     }
     
@@ -72,12 +54,6 @@ public partial class EntityPrefab : SerializedMonoBehaviour
     {
         switch (component)
         {
-            case Component.MovementComponent:
-                MovementComponent = (MovementComponent)entityPrefabCache;
-                break;
-            case Component.InfoComponent:
-                InfoComponent = (InfoComponent)entityPrefabCache;
-                break;
         }
     }
     
@@ -86,12 +62,6 @@ public partial class EntityPrefab : SerializedMonoBehaviour
         flags.Remove(component);
         switch (component)
         {
-            case Component.MovementComponent:
-                isShowMovementComponent = false;
-                break;
-            case Component.InfoComponent:
-                isShowInfoComponent = false;
-                break;
         }
         EditorUtility.SetDirty(this);
     }
@@ -101,12 +71,6 @@ public partial class EntityPrefab : SerializedMonoBehaviour
         if (flags.Contains(component)) return;
         switch (component)
         {
-            case Component.MovementComponent:
-                isShowMovementComponent = true;
-                break;
-            case Component.InfoComponent:
-                isShowInfoComponent = true;
-                break;
         }
         flags.Add(component);
         EditorUtility.SetDirty(this);
@@ -119,12 +83,6 @@ public partial class EntityPrefab : SerializedMonoBehaviour
         {
             switch (item)
             {
-                case Component.MovementComponent:
-                    componentDatas.Add(MovementComponent);
-                    break;
-                case Component.InfoComponent:
-                    componentDatas.Add(InfoComponent);
-                    break;
             }
         }
     }
@@ -137,14 +95,6 @@ public partial class EntityPrefab : SerializedMonoBehaviour
         {
             switch (flags[i])
             {
-                case Component.MovementComponent:
-                    isShowMovementComponent = true;
-                    MovementComponent = (MovementComponent)componentDatas[i];
-                    break;
-                case Component.InfoComponent:
-                    isShowInfoComponent = true;
-                    InfoComponent = (InfoComponent)componentDatas[i];
-                    break;
             }
         }
     }

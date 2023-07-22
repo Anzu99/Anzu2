@@ -32,7 +32,7 @@ public partial class World : MonoBehaviour
 
     private void OnStart()
     {
-        CreateSystem(ESystem.MoveSystem);
+        // CreateSystem(ESystem.MoveSystem);
         entityManager.LoadEntity(PathConfig.Entity.player1, null);
         // entityManager.CreateEntity(Component.InfoComponent, Component.MovementComponent);
         // StartCoroutine(Spawn());
