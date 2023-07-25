@@ -1,60 +1,31 @@
 using System;
+using Unity.Collections;
 
-public class ComponentArray
+public class ComponentArray<T> : IcomponentArray where T : struct, IComponentData
 {
-    public short count;
-    public short[] entitiesID;
-    public IComponentData[] components;
+    public NativeArray<T> components;
+    public ushort count;
 
-    public ComponentArray(ushort _maxCapacity)
+    public ComponentArray(ushort size)
     {
-        count = 0;
-        components = new IComponentData[_maxCapacity];
-        entitiesID = new short[ConfigCapacity.MaxEnities];
-        Array.Fill(entitiesID, (short)-1);
+        count = 1;
+        components = new NativeArray<T>(size, Allocator.Temp);
     }
 
-    public void CreateComponent(ushort idEntity)
+    public void CreateComponent(Entity entity)
     {
-        try
-        {
-            components[count].IdEntity = idEntity;
-            entitiesID[idEntity] = count++;
-        }
-        catch (Exception ex)
-        {
-            if (count >= components.Length)
-            {
-                // UnityEngine.Debug.LogError($"Component array Overload, config capacity {typeof(T)} to fix");
-            }
-            else
-            {
-                UnityEngine.Debug.LogError(ex.Message);
-            }
-        }
-
-    }
-
-    public void InitializeComponent(ushort idEntity)
-    {
-        components[entitiesID[idEntity]].Initialize();
+        components[count - 1].SetEntity(entity);
+        components[count - 1].Start();
+        count++;
     }
 
     public void RemoveComponent(ushort idEntity)
     {
-        ushort entityIDTmp = components[count].IdEntity;
-        components[entitiesID[idEntity]].IdEntity = entityIDTmp;
-        count--;
-    }
 
-    public ref T GetComponentFromArray(ushort idEntity)
-    {
-        return ref components[entitiesID[idEntity]];
     }
-    public ref T[] GetComponentArray()
-    {
-        return ref components;
-    }
+}
 
-
+public interface IcomponentArray
+{
+    public void CreateComponent(Entity entity);
 }

@@ -6,32 +6,29 @@ using Unity.Collections.LowLevel.Unsafe;
 
 public class ArchetypeManager
 {
-    public int count;
-    public Archetype[] archetypes;
+    public List<Archetype> listArchetypes;
 
     public ArchetypeManager()
     {
-        count = 0;
-        archetypes = new Archetype[ConfigCapacity.MaxArchetype];
+        listArchetypes = new List<Archetype>();
     }
 
     public void AddToArchetype(Entity entity)
     {
         Archetype archetype = GetArchetype(entity.flag);
-        archetype.AddEntity(entity.idEntity);
+        archetype.AddEntity(entity);
     }
 
     public IEnumerable<ushort> GetIDEntitiesForQuery(Flag flag)
     {
-        for (var i = 0; i < count; i++)
+        
+    }
+
+    public IEnumerable<Archetype> GetArchetypeForQuery(Flag flag)
+    {
+        foreach (var archetype in listArchetypes)
         {
-            if (archetypes[i].ContainFlag(flag))
-            {
-                for (int j = 1; j <= archetypes[i].count; j++)
-                {
-                    yield return archetypes[i].entities[j];
-                }
-            }
+            if (archetype.ContainFlag(flag)) yield return archetype;
         }
     }
 
@@ -39,7 +36,7 @@ public class ArchetypeManager
     {
         for (var i = 0; i < count; i++)
         {
-            if (archetypes[i].CompareArchetype(flag)) return archetypes[i];
+            if (listArchetypes[i].CompareArchetype(flag)) return listArchetypes[i];
         }
         return CreateArchetype(flag);
     }
@@ -54,15 +51,15 @@ public class ArchetypeManager
     {
         for (var i = 0; i < count; i++)
         {
-            if (archetypes[i] == archetype)
+            if (listArchetypes[i] == archetype)
             {
                 if (i == count - 1)
                 {
                     count--;
                     break;
                 }
-                Archetype tmp = archetypes[count - 1];
-                archetypes[i] = tmp;
+                Archetype tmp = listArchetypes[count - 1];
+                listArchetypes[i] = tmp;
                 count--;
                 break;
             }
@@ -72,8 +69,8 @@ public class ArchetypeManager
     /* =========================================== LOCAL FUNCTION =========================================== */
     private Archetype CreateArchetype(Flag flag)
     {
-        archetypes[count] = new Archetype(flag);
-        return archetypes[count++];
+        listArchetypes[count] = new Archetype(flag);
+        return listArchetypes[count++];
     }
 
 

@@ -22,12 +22,12 @@ public class ArchetypeDebugDrawer : OdinValueDrawer<ArchetypeDebug>
         GUILayout.Space(10);
         for (ushort i = 0; i < archetypeManager.count; i++)
         {
-            string name = World.GetEntity(archetypeManager.archetypes[i].entities[0]).Name;
+            string name = World.GetEntity(archetypeManager.listArchetypes[i].entities[0]).Name;
 
             SirenixEditorGUI.BeginLegendBox();
             GUILayout.BeginHorizontal();
 
-            GUILayout.Label("   Count: " + archetypeManager.archetypes[i].count, SirenixGUIStyles.LeftAlignedGreyLabel);
+            GUILayout.Label("   Count: " + archetypeManager.listArchetypes[i].count, SirenixGUIStyles.LeftAlignedGreyLabel);
 
             if (GUILayout.Button(name))
             {
@@ -120,7 +120,7 @@ public class ArchetypeItem : OdinEditorWindow
         GUILayout.Label("Count: ", SirenixGUIStyles.LabelCentered);
         SirenixEditorGUI.EndBoxHeader();
 
-        ushort[] id = archetypeManager.archetypes[archetypeID].entities;
+        ushort[] id = archetypeManager.listArchetypes[archetypeID].entities;
 
         float width = position.width;
         width -= 30;
