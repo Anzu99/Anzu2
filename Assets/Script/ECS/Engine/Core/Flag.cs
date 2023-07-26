@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using AV;
 using UnityEngine;
 
 [System.Serializable]
@@ -98,5 +101,22 @@ public struct Flag
             if (!components[i].ContainFlag(otherFlag.components[i])) return false;
         }
         return true;
+    }
+
+    public Component[] ToComponents()
+    {
+        List<Component> listComponent = new List<Component>();
+
+        Component componentTmp = Component.None;
+        for (var i = 1; i < Enum.GetNames(typeof(Component)).Length; i++)
+        {
+            componentTmp = AV_ENUM_EXTENSION.Next(componentTmp);
+            if (ContainComponent(componentTmp))
+            {
+                listComponent.Add(componentTmp);
+            }
+        }
+
+        return listComponent.ToArray();
     }
 }

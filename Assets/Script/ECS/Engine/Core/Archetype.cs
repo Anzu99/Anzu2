@@ -4,28 +4,24 @@ using Unity.Jobs;
 
 public class Archetype
 {
-    public Flag flag;
-    List<ArchetypeChunk> listArchetypeChunks;
-    public ushort chunkSize;
-    Component[] components;
-    Dictionary<Component, byte> componentIndices;
-    public Archetype(Component[] components, Flag flag)
+    private Flag flag;
+    private List<ArchetypeChunk> listArchetypeChunks;
+    private ushort chunkSize;
+    private Component[] components;
+    private Dictionary<Component, byte> componentIndices;
+    public bool isEmpty => listArchetypeChunks.Count <= 0;
+    public Archetype(Flag flag)
     {
         componentIndices = new Dictionary<Component, byte>();
         listArchetypeChunks = new List<ArchetypeChunk>();
-        CreateNewChunk();
         this.flag = flag;
-        this.components = components;
+        this.components = flag.ToComponents();
     }
 
 
     public void AddEntity(Entity entity)
     {
-        if (listArchetypeChunks[^1].count < chunkSize)
-        {
-            listArchetypeChunks[^1].AddEntity(entity);
-        }
-        else
+        if (!listArchetypeChunks[^1].AddEntity(entity))
         {
             CreateNewChunk();
             AddEntity(entity);
@@ -38,7 +34,7 @@ public class Archetype
         listArchetypeChunks.Add(archetypeChunk);
     }
 
-    public IEnumerable<NativeArray<T>> GetComponentArrayData<T>(Component component) where T : struct, IComponentData
+    public IEnumerable<ComponentArray<T>> GetComponentArrayData<T>(Component component) where T : struct, IComponentData
     {
         foreach (var item in listArchetypeChunks)
         {
@@ -48,12 +44,18 @@ public class Archetype
 
     public void RemoveEntity(ushort idEntity)
     {
-
-    }
-
-    public void RemoveArchetype()
-    {
-        flag.Clear();
+        foreach (var item in listArchetypeChunks)
+        {
+            if (item.RemoveEntity(idEntity))
+            {
+                if (item.isEmpty)
+                {
+                    item.DestroyChunk();
+                    listArchetypeChunks.Remove(item);
+                }
+                break;
+            }
+        }
     }
 
     public bool ContainFlag(Flag otherFlag)
@@ -69,13 +71,17 @@ public class Archetype
 
 public class ArchetypeChunk
 {
-    Dictionary<ushort, ushort> entityIndices;
-    IcomponentArray[] componentArrays;
-    public ushort count;
+    private Dictionary<ushort, ushort> entityIndices;
+    private IcomponentArray[] componentArrays;
+    private ushort count;
+    private ushort chunkSize;
+
+    public bool isEmpty => count <= 0;
 
     public ArchetypeChunk(Component[] components, ushort chunkSize)
     {
         count = 1;
+        this.chunkSize = chunkSize;
         entityIndices = new Dictionary<ushort, ushort>();
         componentArrays = new IcomponentArray[components.Length];
         for (var i = 0; i < components.Length; i++)
@@ -83,33 +89,61 @@ public class ArchetypeChunk
             CreateComponentArray(components[i], chunkSize, i);
         }
     }
-    public NativeArray<T> GetComponentArray<T>(byte componentidx) where T : struct, IComponentData
+    public ComponentArray<T> GetComponentArray<T>(byte componentidx) where T : struct, IComponentData
     {
-        ComponentArray<T> componentArray = (ComponentArray<T>)componentArrays[componentidx];
-        return componentArray.components;
+        return (ComponentArray<T>)componentArrays[componentidx];
     }
 
-    public void AddEntity(Entity entity)
+    public bool AddEntity(Entity entity)
     {
-        for (var i = 0; i < componentArrays.Length; i++)
+        if (count >= chunkSize)
         {
-            componentArrays[count - 1].CreateComponent(entity);
-            entityIndices.Add(entity.idEntity, (ushort)(count - 1));
-            count++;
+            return false;
+        }
+        else
+        {
+            for (var i = 0; i < componentArrays.Length; i++)
+            {
+                componentArrays[i].CreateComponent(entity, (ushort)(count - 1));
+                entityIndices.Add(entity.idEntity, (ushort)(count - 1));
+                count++;
+                componentArrays[i].SetIsFullArray(count >= chunkSize);
+            }
+            return true;
         }
     }
 
-    public void RemoveEntity(Entity entity)
+    public bool RemoveEntity(ushort entityID)
     {
-        count--;
-        entityIndices.Remove(entity.idEntity);
+        if (ContainEntity(entityID))
+        {
+            foreach (var item in componentArrays)
+            {
+                item.RemoveComponent(entityIndices[entityID]);
+                item.SetIsFullArray(false);
+            }
+            count--;
+            entityIndices.Remove(entityID);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
+    public void DestroyChunk()
+    {
+        foreach (var item in componentArrays)
+        {
+            item.OnDestroy();
+        }
+    }
 
-
-
-
-
+    private bool ContainEntity(ushort entityID)
+    {
+        return entityIndices.ContainsKey(entityID);
+    }
 
     private void CreateComponentArray(Component component, ushort size, int index)
     {
@@ -120,82 +154,5 @@ public class ArchetypeChunk
                 break;
         }
     }
-}
 
-
-
-
-
-
-
-
-
-public class Manager
-{
-    object[] itemArrays;
-
-    private void Start()
-    {
-        itemArrays = new object[10];
-
-        for (var i = 0; i < itemArrays.Length; i++)
-        {
-            itemArrays[i] = new ItemArray<ItemBuff>();
-        }
-    }
-
-    public void Execute()
-    {
-        foreach (var item in itemArrays)
-        {
-            ItemArray<ItemBuff> itemArray = (ItemArray<ItemBuff>)item;
-        }
-
-        MyJob job = new MyJob
-        {
-        };
-    }
-
-    struct MyJob : IJobParallelFor
-    {
-        public NativeArray<ItemBuff> resultArray;
-
-        public void Execute(int index)
-        {
-            resultArray[index].PickUp();
-        }
-    }
-}
-
-
-
-
-public class ItemArray<T> where T : struct, IItem
-{
-    public NativeArray<T> items;
-
-    public ItemArray()
-    {
-        items = new NativeArray<T>(100, Allocator.Temp);
-    }
-    public void PickUp()
-    {
-        foreach (var item in items)
-        {
-            item.PickUp();
-        }
-    }
-}
-
-public struct ItemBuff : IItem
-{
-    public void PickUp()
-    {
-        UnityEngine.Debug.LogError("pick up");
-    }
-}
-
-public interface IItem
-{
-    public void PickUp();
 }

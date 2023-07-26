@@ -19,11 +19,6 @@ public class ArchetypeManager
         archetype.AddEntity(entity);
     }
 
-    public IEnumerable<ushort> GetIDEntitiesForQuery(Flag flag)
-    {
-        
-    }
-
     public IEnumerable<Archetype> GetArchetypeForQuery(Flag flag)
     {
         foreach (var archetype in listArchetypes)
@@ -34,9 +29,9 @@ public class ArchetypeManager
 
     public Archetype GetArchetype(Flag flag)
     {
-        for (var i = 0; i < count; i++)
+        foreach (var item in listArchetypes)
         {
-            if (listArchetypes[i].CompareArchetype(flag)) return listArchetypes[i];
+            if (item.CompareArchetype(flag)) return item;
         }
         return CreateArchetype(flag);
     }
@@ -44,33 +39,25 @@ public class ArchetypeManager
     public void ChangeEntityArchetype(Entity entity, Flag newflag)
     {
         GetArchetype(entity.flag).RemoveEntity(entity.idEntity);
-        GetArchetype(newflag).AddEntity(entity.idEntity);
+        GetArchetype(newflag).AddEntity(entity);
     }
 
-    public void RemoveArchetype(Archetype archetype)
+    public void RemoveEntity(Flag flag, Entity entity)
     {
-        for (var i = 0; i < count; i++)
+        Archetype archetype = GetArchetype(flag);
+        archetype.RemoveEntity(entity.idEntity);
+        if (archetype.isEmpty)
         {
-            if (listArchetypes[i] == archetype)
-            {
-                if (i == count - 1)
-                {
-                    count--;
-                    break;
-                }
-                Archetype tmp = listArchetypes[count - 1];
-                listArchetypes[i] = tmp;
-                count--;
-                break;
-            }
+            listArchetypes.Remove(archetype);
         }
     }
 
     /* =========================================== LOCAL FUNCTION =========================================== */
     private Archetype CreateArchetype(Flag flag)
     {
-        listArchetypes[count] = new Archetype(flag);
-        return listArchetypes[count++];
+        Archetype archetype = new Archetype(flag);
+        listArchetypes.Add(archetype);
+        return archetype;
     }
 
 

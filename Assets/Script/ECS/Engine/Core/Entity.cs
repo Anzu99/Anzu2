@@ -6,7 +6,7 @@ public class Entity
     public ushort idEntity;
     public Flag flag;
     public GameObject gameObject;
-
+    public bool IsAlive;
     public string Name
     {
         get { return gameObject.name; }
