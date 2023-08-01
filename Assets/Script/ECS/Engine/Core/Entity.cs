@@ -13,15 +13,12 @@ public class Entity
         set { gameObject.name = value; }
     }
 
-    public Entity(Component[] components, ushort _idEntity, GameObject go)
+    public Entity(Flag flag, ushort _idEntity, GameObject go)
     {
         idEntity = _idEntity;
         gameObject = go;
-        flag.Init();
-        foreach (var item in components)
-        {
-            AddComponentInWorld(item);
-        }
+        this.flag = flag;
+
     }
 
     public Entity(ushort _idEntity, EntityPrefab entityPrefab)
@@ -80,12 +77,8 @@ public class Entity
     {
         return ref World.componentManager.GetComponent<T>(flag, idEntity);
     }
-    public void ComponentInitalize(Component[] _Components)
+    public ref T GetComponent<T>(Component component) where T : struct, IComponentData
     {
-        foreach (var item in _Components)
-        {
-            World.componentManager.InitializeComponent(item, idEntity);
-        }
+        return ref World.archetypeManager.GetArchetype(flag).GetComponentArrayData<T>(component)
     }
-
 }

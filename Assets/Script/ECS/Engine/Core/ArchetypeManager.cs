@@ -7,6 +7,7 @@ using Unity.Collections.LowLevel.Unsafe;
 public class ArchetypeManager
 {
     public List<Archetype> listArchetypes;
+    
 
     public ArchetypeManager()
     {

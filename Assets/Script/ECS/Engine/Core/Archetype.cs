@@ -42,6 +42,17 @@ public class Archetype
         }
     }
 
+    public ref T GetComponent<T>(Component component, ushort idEntity) where T : struct, IComponentData
+    {
+        foreach (var item in listArchetypeChunks)
+        {
+            if (item.ContainEntity(idEntity))
+            {
+
+            }
+        }
+    }
+
     public void RemoveEntity(ushort idEntity)
     {
         foreach (var item in listArchetypeChunks)
@@ -113,6 +124,11 @@ public class ArchetypeChunk
         }
     }
 
+    public T GetComponent<T>(Entity entity) where T : struct, IComponentData
+    {
+        return componentArrays[entityIndices[entity.idEntity]].GetComponentData<T>(entity);
+    }
+
     public bool RemoveEntity(ushort entityID)
     {
         if (ContainEntity(entityID))
@@ -140,7 +156,7 @@ public class ArchetypeChunk
         }
     }
 
-    private bool ContainEntity(ushort entityID)
+    public bool ContainEntity(ushort entityID)
     {
         return entityIndices.ContainsKey(entityID);
     }

@@ -52,6 +52,7 @@ public struct Flag
 
     public void AddComponents(params Component[] eComponents)
     {
+        if (components.Length <= 0) Init();
         foreach (var item in eComponents)
         {
             components.AddFlag(item);

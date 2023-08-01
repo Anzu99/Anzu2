@@ -6,6 +6,7 @@ public class ComponentArray<T> : IcomponentArray where T : struct, IComponentDat
     private NativeArray<T> components;
     private bool fullArray;
 
+
     public ComponentArray(ushort size)
     {
         components = new NativeArray<T>(size, Allocator.Temp);
@@ -35,6 +36,20 @@ public class ComponentArray<T> : IcomponentArray where T : struct, IComponentDat
     {
         components.Dispose();
     }
+
+
+
+    public ref IComponentData GetComponentData(Entity entity)
+    {
+        for (var i = 0; i < components.Length; i++)
+        {
+            if (entity == components[i].GetEntity())
+            {
+                return ref components[i];
+            }
+        }
+        return default;
+    }
 }
 
 public interface IcomponentArray
@@ -44,4 +59,5 @@ public interface IcomponentArray
     bool CheckFullArray();
     void SetIsFullArray(bool value);
     public void OnDestroy();
+    public IComponentData GetComponentData(Entity entity);
 }

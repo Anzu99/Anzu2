@@ -23,9 +23,8 @@ public partial class World : MonoBehaviour
     {
         ShowFPS.ShowFPSHandle();
         instance = this;
-        entityManager = new EntityManager();
-        componentManager = new ComponentManager();
         archetypeManager = new ArchetypeManager();
+        entityManager = new EntityManager(archetypeManager);
         systemManager = new SystemManager();
         OnStart();
     }
@@ -33,7 +32,7 @@ public partial class World : MonoBehaviour
     private void OnStart()
     {
         // CreateSystem(ESystem.MoveSystem);
-        entityManager.LoadEntity(PathConfig.Entity.player1, null);
+        // entityManager.LoadEntity(PathConfig.Entity.player1, null);
         // entityManager.CreateEntity(Component.InfoComponent, Component.MovementComponent);
         // StartCoroutine(Spawn());
         // IEnumerator Spawn()
