@@ -7,7 +7,7 @@ using Unity.Collections.LowLevel.Unsafe;
 public class ArchetypeManager
 {
     public List<Archetype> listArchetypes;
-    
+
 
     public ArchetypeManager()
     {
@@ -16,8 +16,7 @@ public class ArchetypeManager
 
     public void AddToArchetype(Entity entity)
     {
-        Archetype archetype = GetArchetype(entity.flag);
-        archetype.AddEntity(entity);
+        entity.archetype.AddEntity(entity);
     }
 
     public IEnumerable<Archetype> GetArchetypeForQuery(Flag flag)
@@ -39,7 +38,7 @@ public class ArchetypeManager
 
     public void ChangeEntityArchetype(Entity entity, Flag newflag)
     {
-        GetArchetype(entity.flag).RemoveEntity(entity.idEntity);
+        entity.archetype.RemoveEntity(entity.idEntity);
         GetArchetype(newflag).AddEntity(entity);
     }
 
@@ -53,6 +52,16 @@ public class ArchetypeManager
         }
     }
 
+    public Entity GetEntity(ushort idEntity)
+    {
+        foreach (var archetype in listArchetypes)
+        {
+            Entity entity = archetype.GetEntity(idEntity);
+            if (entity != null) return entity;
+        }
+        return null;
+    }
+
     /* =========================================== LOCAL FUNCTION =========================================== */
     private Archetype CreateArchetype(Flag flag)
     {
@@ -60,8 +69,5 @@ public class ArchetypeManager
         listArchetypes.Add(archetype);
         return archetype;
     }
-
-
-
 }
 

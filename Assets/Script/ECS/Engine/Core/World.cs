@@ -31,6 +31,8 @@ public partial class World : MonoBehaviour
 
     private void OnStart()
     {
+        entityManager.CreateEntity(Component.TransformComponent);
+
         // CreateSystem(ESystem.MoveSystem);
         // entityManager.LoadEntity(PathConfig.Entity.player1, null);
         // entityManager.CreateEntity(Component.InfoComponent, Component.MovementComponent);
@@ -59,7 +61,7 @@ public partial class World : MonoBehaviour
 
     public static Entity GetEntity(ushort idEntity)
     {
-        return entityManager.entities[idEntity];
+        return entityManager.GetEntity(idEntity);
     }
 
     #region System

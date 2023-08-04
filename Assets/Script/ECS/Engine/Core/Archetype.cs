@@ -4,7 +4,7 @@ using Unity.Jobs;
 
 public class Archetype
 {
-    private Flag flag;
+    public Flag flag;
     private List<ArchetypeChunk> listArchetypeChunks;
     private ushort chunkSize;
     private Component[] components;
@@ -16,6 +16,7 @@ public class Archetype
         listArchetypeChunks = new List<ArchetypeChunk>();
         this.flag = flag;
         this.components = flag.ToComponents();
+        CreateNewChunk();
     }
 
 
@@ -23,7 +24,6 @@ public class Archetype
     {
         if (!listArchetypeChunks[^1].AddEntity(entity))
         {
-            CreateNewChunk();
             AddEntity(entity);
         }
     }
@@ -42,15 +42,28 @@ public class Archetype
         }
     }
 
-    public ref T GetComponent<T>(Component component, ushort idEntity) where T : struct, IComponentData
+    public ComponentEditor<T> GetComponentEditor<T>(Component component, ushort idEntity) where T : struct, IComponentData
     {
-        foreach (var item in listArchetypeChunks)
+        foreach (var archetype in listArchetypeChunks)
         {
-            if (item.ContainEntity(idEntity))
+            if (archetype.ContainEntity(idEntity))
             {
-
+                return archetype.GetComponentEditor<T>(idEntity, GetIndiceComponent(component));
             }
         }
+        return null;
+    }
+
+    public Entity GetEntity(ushort idEntity)
+    {
+        foreach (var archetype in listArchetypeChunks)
+        {
+            if (archetype.ContainEntity(idEntity))
+            {
+                return archetype.GetEntity(idEntity);
+            }
+        }
+        return null;
     }
 
     public void RemoveEntity(ushort idEntity)
@@ -69,6 +82,18 @@ public class Archetype
         }
     }
 
+    private ushort GetIndiceComponent(Component component)
+    {
+        for (ushort i = 0; i < components.Length; i++)
+        {
+            if (component == components[i])
+            {
+                return i;
+            }
+        }
+        return 0;
+    }
+
     public bool ContainFlag(Flag otherFlag)
     {
         return flag.ContainFlag(otherFlag);
@@ -83,7 +108,7 @@ public class Archetype
 public class ArchetypeChunk
 {
     private Dictionary<ushort, ushort> entityIndices;
-    private IcomponentArray[] componentArrays;
+    private List<IComponentArray> componentArrays;
     private ushort count;
     private ushort chunkSize;
 
@@ -94,7 +119,8 @@ public class ArchetypeChunk
         count = 1;
         this.chunkSize = chunkSize;
         entityIndices = new Dictionary<ushort, ushort>();
-        componentArrays = new IcomponentArray[components.Length];
+        componentArrays = new List<IComponentArray>();
+
         for (var i = 0; i < components.Length; i++)
         {
             CreateComponentArray(components[i], chunkSize, i);
@@ -113,7 +139,7 @@ public class ArchetypeChunk
         }
         else
         {
-            for (var i = 0; i < componentArrays.Length; i++)
+            for (var i = 0; i < componentArrays.Count; i++)
             {
                 componentArrays[i].CreateComponent(entity, (ushort)(count - 1));
                 entityIndices.Add(entity.idEntity, (ushort)(count - 1));
@@ -124,9 +150,15 @@ public class ArchetypeChunk
         }
     }
 
-    public T GetComponent<T>(Entity entity) where T : struct, IComponentData
+    public ComponentEditor<T> GetComponentEditor<T>(ushort idEntity, ushort componentIndice) where T : struct, IComponentData
     {
-        return componentArrays[entityIndices[entity.idEntity]].GetComponentData<T>(entity);
+        ComponentArray<T> componentArray = (ComponentArray<T>)componentArrays[componentIndice];
+        return componentArray.GetComponentEditor(entityIndices[idEntity]);
+    }
+
+    public Entity GetEntity(ushort idEntity)
+    {
+        return componentArrays[0].GetEntity(entityIndices[idEntity]);
     }
 
     public bool RemoveEntity(ushort entityID)
@@ -165,7 +197,7 @@ public class ArchetypeChunk
     {
         switch (component)
         {
-            case Component.Transform:
+            case Component.TransformComponent:
                 componentArrays[index] = new ComponentArray<TransformComponent>(size);
                 break;
         }

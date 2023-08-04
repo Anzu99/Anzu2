@@ -1,11 +1,10 @@
 using System;
 using Unity.Collections;
 
-public class ComponentArray<T> : IcomponentArray where T : struct, IComponentData
+public class ComponentArray<T> : IComponentArray where T : struct, IComponentData
 {
     private NativeArray<T> components;
     private bool fullArray;
-
 
     public ComponentArray(ushort size)
     {
@@ -38,26 +37,29 @@ public class ComponentArray<T> : IcomponentArray where T : struct, IComponentDat
     }
 
 
-
-    public ref IComponentData GetComponentData(Entity entity)
+    public Entity GetEntity(ushort indice)
     {
-        for (var i = 0; i < components.Length; i++)
-        {
-            if (entity == components[i].GetEntity())
-            {
-                return ref components[i];
-            }
-        }
-        return default;
+        return components[indice].GetEntity();
     }
+
+    public ComponentEditor<T> GetComponentEditor(ushort componentIndice)
+    {
+        ComponentEditor<T> componentEditor = new ComponentEditor<T>()
+        {
+            array = components,
+            index = componentIndice
+        };
+        return componentEditor;
+    }
+
 }
 
-public interface IcomponentArray
+public interface IComponentArray
 {
+    public Entity GetEntity(ushort indice);
     public void CreateComponent(Entity entity, ushort idx);
     public void RemoveComponent(ushort idx);
     bool CheckFullArray();
     void SetIsFullArray(bool value);
     public void OnDestroy();
-    public IComponentData GetComponentData(Entity entity);
 }

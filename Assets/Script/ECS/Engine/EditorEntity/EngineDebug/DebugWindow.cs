@@ -31,7 +31,7 @@ public class DebugWindow : OdinMenuEditorWindow
         OdinMenuTree tree = new OdinMenuTree();
         tree.Selection.SupportsMultiSelect = false;
         tree.UpdateMenuTree();
-        tree.Add("Archetype", new ArchetypeDebug());
+        // tree.Add("Archetype", new ArchetypeDebug());
         tree.Add("Utility", new UtilityTab());
         tree.AddAllAssetsAtPath("Odin Settings", "Assets/Plugins/Sirenix", typeof(ScriptableObject), true, true);
         return tree;

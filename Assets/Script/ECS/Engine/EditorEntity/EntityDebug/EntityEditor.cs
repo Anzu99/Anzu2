@@ -3,8 +3,8 @@ using UnityEngine;
 
 public partial class EntityEditor : MonoBehaviour
 {
-    private ushort idEntity;
-    public ushort IdEntity { get => idEntity; set => idEntity = value; }
+    private Entity entity;
+    public Entity Entity { get => entity; set => entity = value; }
     private Flag flag;
     public void OnUpdate()
     {
@@ -13,7 +13,7 @@ public partial class EntityEditor : MonoBehaviour
 
     void UpdateComponentFlags()
     {
-        flag = World.GetEntity(IdEntity).flag;
+        flag = entity.archetype.flag;
     }
 
     public bool HasComponent(Component component)
@@ -26,6 +26,6 @@ public partial class EntityEditor : MonoBehaviour
         return flag.Equal(otherFlag);
     }
 
-    public partial void SetUpDataPrefab(EntityPrefab entityPrefab);
+    // public partial void SetUpDataPrefab(EntityPrefab entityPrefab);
 
 }

@@ -8,15 +8,16 @@ public class ANZU_Generate
 {
     public static void GenerateEntityEditor()
     {
-        ComponentEditorData componentEditorData = new ComponentEditorData();
-        componentEditorData.LoadData();
-        string[] strs = new string[componentEditorData.componentConfigData.componentComfigItems.Count];
-        for (var i = 0; i < strs.Length; i++)
-        {
-            strs[i] = componentEditorData.componentConfigData.componentComfigItems[i].component.ToString();
-        }
-        string[] componentNames = strs;
-
+        // ComponentEditorData componentEditorData = new ComponentEditorData();
+        // componentEditorData.LoadData();
+        // string[] strs = new string[componentEditorData.componentConfigData.componentComfigItems.Count];
+        // for (var i = 0; i < strs.Length; i++)
+        // {
+        //     strs[i] = componentEditorData.componentConfigData.componentComfigItems[i].component.ToString();
+        // }
+        // string[] componentNames = strs;
+        string filePath = $"Assets/Script/ECS/Component";
+        string[] componentNames = DirectoryUtility.GetAllFileInFolderAndChild(filePath, "cs");
         // string filePath = $"Assets/Script/ECS/Component";
         // string[] componentNames = DirectoryUtility.GetAllFileInFolderAndChild(filePath, "cs");
 
@@ -33,7 +34,7 @@ public class ANZU_Generate
             string isShowIf = $"\"isShow{item}\"";
 
             string content1 = $@"
-    [ColoredFoldoutGroup(Component.{item}, 0, 1, 0, 1), HideLabel, PropertyOrder({componentEditorData.componentConfigData.componentComfigItems[count++].order})]
+    [ColoredFoldoutGroup(Component.{item}, 0, 1, 0, 1), HideLabel, PropertyOrder({count++/* componentEditorData.componentConfigData.componentComfigItems[count++].order */})]
     [ShowIf({isShowIf}, true), ShowInInspector]
     public {item} {item}
     {{

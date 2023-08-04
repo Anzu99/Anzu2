@@ -19,3 +19,4 @@ public struct TransformComponent : IComponentData
         throw new System.NotImplementedException();
     }
 }
+
