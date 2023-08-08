@@ -3,12 +3,12 @@ using Unity.Collections;
 
 public class ComponentArray<T> : IComponentArray where T : struct, IComponentData
 {
-    private NativeArray<T> components;
+    public T[] components;
     private bool fullArray;
 
     public ComponentArray(ushort size)
     {
-        components = new NativeArray<T>(size, Allocator.Temp);
+        components = new T[size];
     }
 
     public void CreateComponent(Entity entity, ushort idx)
@@ -30,36 +30,12 @@ public class ComponentArray<T> : IComponentArray where T : struct, IComponentDat
     {
         fullArray = value;
     }
-
-    public void OnDestroy()
-    {
-        components.Dispose();
-    }
-
-
-    public Entity GetEntity(ushort indice)
-    {
-        return components[indice].GetEntity();
-    }
-
-    public ComponentEditor<T> GetComponentEditor(ushort componentIndice)
-    {
-        ComponentEditor<T> componentEditor = new ComponentEditor<T>()
-        {
-            array = components,
-            index = componentIndice
-        };
-        return componentEditor;
-    }
-
 }
 
 public interface IComponentArray
 {
-    public Entity GetEntity(ushort indice);
     public void CreateComponent(Entity entity, ushort idx);
     public void RemoveComponent(ushort idx);
-    bool CheckFullArray();
-    void SetIsFullArray(bool value);
-    public void OnDestroy();
+    public bool CheckFullArray();
+    public void SetIsFullArray(bool value);
 }

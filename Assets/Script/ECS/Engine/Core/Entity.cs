@@ -22,8 +22,8 @@ public class Entity
         archetype.AddEntity(this);
     }
 
-    public ComponentEditor<T> GetComponentArrayEditor<T>(Component component) where T : struct, IComponentData
+    public ref T GetComponent<T>(Component component) where T : struct, IComponentData
     {
-        return archetype.GetComponentEditor<T>(component, idEntity);
+        return ref archetype.GetComponent<T>(component, idEntity);
     }
 }

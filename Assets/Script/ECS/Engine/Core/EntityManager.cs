@@ -35,10 +35,4 @@ public class EntityManager
         editorIndice[countEntity] = entityEditors.Count - 1;
         go.AddComponent<EditorForceRepaint>();
     }
-
-    public Entity GetEntity(ushort idEntity)
-    {
-        return archetypeManager.GetEntity(idEntity);
-    }
-
 }

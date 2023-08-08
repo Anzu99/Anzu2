@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class SystemBase
@@ -35,7 +36,33 @@ public class SystemBase
 
     #region PP
     /* =========================================== PP =========================================== */
-    protected void ForEach<R, R2>(ActionRR<R, R2> action) where R : struct, IComponentData where R2 : struct, IComponentData
+    protected void NormalAction<R, R2>(ActionRR<R, R2> action) where R : struct, IComponentData where R2 : struct, IComponentData
+    {
+        foreach (var archetype in World.archetypeManager.GetArchetypeForQuery(entityQuery.flag))
+        {
+            ComponentArray<R>[] componentArray_R = archetype.GetComponentArrayData<R>(entityQuery.components[0]);
+            ComponentArray<R2>[] componentArray_R2 = archetype.GetComponentArrayData<R2>(entityQuery.components[1]);
+            for (int i = 0; i < componentArray_R.Length; i++)
+            {
+                R[] arrayR = componentArray_R[i].components;
+                R2[] arrayR2 = componentArray_R2[i].components;
+                for (int j = 0; j < arrayR.Length; j++)
+                {
+                    action(ref arrayR[j], ref arrayR2[j]);
+                }
+            }
+        }
+    }
+
+    protected void ParallelChunkAction<R, R2>(ActionRR<R, R2> action) where R : struct, IComponentData where R2 : struct, IComponentData
+    {
+        foreach (var archetype in World.archetypeManager.GetArchetypeForQuery(entityQuery.flag))
+        {
+            
+        }
+    }
+
+    protected void ForEach<R, I>(ActionRI<R, I> action) where R : struct, IComponentData where I : struct, IComponentData
     {
         // if (!World.componentManager.HasComponentArray(entityQuery.components[0])) return;
         // foreach (var item in World.archetypeManager.GetIDEntitiesForQuery(entityQuery.flag))
@@ -44,11 +71,6 @@ public class SystemBase
         //     ref R2 c2 = ref World.componentManager.GetComponent<R2>(entityQuery.components[1], item);
         //     action(ref c1, ref c2);
         // }
-    }
-
-    protected void ForEach<R, I>(ActionRI<R, I> action) where R : struct, IComponentData where I : struct, IComponentData
-    {
-       
     }
     /* =========================================== PP =========================================== */
     #endregion

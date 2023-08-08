@@ -1,10 +1,11 @@
+using System.ComponentModel;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct TransformComponent : IComponentData
+[System.Serializable]
+public struct MoveComponent : IComponentData
 {
-    public Transform transform;
     private Entity entity;
     public Entity GetEntity()
     {
@@ -13,12 +14,10 @@ public struct TransformComponent : IComponentData
 
     public void SetEntity(Entity value)
     {
-        entity = value;
+        this.entity = value;
     }
 
     public void Start()
     {
-        transform = entity.gameObject.transform;
     }
 }
-

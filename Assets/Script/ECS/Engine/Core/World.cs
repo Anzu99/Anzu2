@@ -21,6 +21,7 @@ public partial class World : MonoBehaviour
 
     private void Awake()
     {
+        
         ShowFPS.ShowFPSHandle();
         instance = this;
         archetypeManager = new ArchetypeManager();
@@ -31,7 +32,7 @@ public partial class World : MonoBehaviour
 
     private void OnStart()
     {
-        entityManager.CreateEntity(Component.TransformComponent);
+        entityManager.CreateEntity(Component.TransformComponent, Component.MoveComponent);
 
         // CreateSystem(ESystem.MoveSystem);
         // entityManager.LoadEntity(PathConfig.Entity.player1, null);
@@ -57,11 +58,6 @@ public partial class World : MonoBehaviour
     private void Update()
     {
         UpdateSystem();
-    }
-
-    public static Entity GetEntity(ushort idEntity)
-    {
-        return entityManager.GetEntity(idEntity);
     }
 
     #region System

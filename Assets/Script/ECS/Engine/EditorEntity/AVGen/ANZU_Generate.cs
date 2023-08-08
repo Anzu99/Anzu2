@@ -38,8 +38,8 @@ public class ANZU_Generate
     [ShowIf({isShowIf}, true), ShowInInspector]
     public {item} {item}
     {{
-        get => {isShow_NAME} ? World.GetEntity(IdEntity).GetComponent<{item}>(Component.{item}) : default;
-        set => World.GetEntity(IdEntity).GetComponent<{item}>(Component.{item}) = value;
+        get => {isShow_NAME} ? entity.GetComponent<{item}>(Component.{item}) : default;
+        set => entity.GetComponent<{item}>(Component.{item}) = value;
     }}
 ";
 

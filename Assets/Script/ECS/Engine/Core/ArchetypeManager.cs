@@ -52,16 +52,6 @@ public class ArchetypeManager
         }
     }
 
-    public Entity GetEntity(ushort idEntity)
-    {
-        foreach (var archetype in listArchetypes)
-        {
-            Entity entity = archetype.GetEntity(idEntity);
-            if (entity != null) return entity;
-        }
-        return null;
-    }
-
     /* =========================================== LOCAL FUNCTION =========================================== */
     private Archetype CreateArchetype(Flag flag)
     {

@@ -43,6 +43,7 @@ public partial class ComponentManager
 public enum Component
 {
     None,
-    TransformComponent
+    TransformComponent,
+    MoveComponent
 }
         
