@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using System;
 using UnityEngine;
 
@@ -7,15 +8,23 @@ public class SystemBase
     protected EntityQuery entityQuery;
     public bool active = true;
     public SystemBase() { }
-    public void Update() { if (active) Execute(); }
+    public void Update()
+    {
+        if (active)
+        {
+            deltaTime = Time.deltaTime;
+            Execute();
+        }
+    }
     public virtual void Start() { }
     public virtual void Execute() { }
     public virtual void FixedUpdate() { }
 
+    public delegate void Action1P<P>(P arg1);
     public delegate void ActionR<R>(ref R arg1);
     public delegate void ActionI<I>(in I arg1);
 
-
+    public delegate void Action2P<P, P2>(P arg1, P2 arg2);
     public delegate void ActionRR<R, R2>(ref R arg1, ref R2 arg2);
     public delegate void ActionRI<R, I>(ref R arg1, in I arg2);
     public delegate void ActionII<I, I2>(in I arg1, in I2 arg2);
@@ -32,46 +41,133 @@ public class SystemBase
     public delegate void ActionRRII<R, R2, I, I2>(ref R arg1, ref R2 arg2, in I arg3, in I2 arg4);
     public delegate void ActionRIII<R, I, I2, I3>(ref R arg1, in I arg2, in I2 arg3, in I3 arg4);
     public delegate void ActionIIII<I, I2, I3, I4>(in I arg1, in I2 arg2, in I3 arg3, in I4 arg4);
+    protected float deltaTime;
 
-
-    #region PP
-    /* =========================================== PP =========================================== */
-    protected void NormalAction<R, R2>(ActionRR<R, R2> action) where R : struct, IComponentData where R2 : struct, IComponentData
+    #region P
+    protected void NormalAction<P>(Action1P<P> action) where P : struct, IComponentData
     {
         foreach (var archetype in World.archetypeManager.GetArchetypeForQuery(entityQuery.flag))
         {
-            ComponentArray<R>[] componentArray_R = archetype.GetComponentArrayData<R>(entityQuery.components[0]);
-            ComponentArray<R2>[] componentArray_R2 = archetype.GetComponentArrayData<R2>(entityQuery.components[1]);
-            for (int i = 0; i < componentArray_R.Length; i++)
+            byte componentIndices_P = archetype.GetComponentIndice(entityQuery.components[0]);
+            foreach (var Chunk in archetype.listArchetypeChunks)
             {
-                R[] arrayR = componentArray_R[i].components;
-                R2[] arrayR2 = componentArray_R2[i].components;
-                for (int j = 0; j < arrayR.Length; j++)
+                ComponentArray<P> componentArray_P = Chunk.GetComponentArray<P>(componentIndices_P);
+                for (int i = 0; i < Chunk.count; i++)
                 {
-                    action(ref arrayR[j], ref arrayR2[j]);
+                    action(componentArray_P.components[i]);
                 }
             }
         }
     }
 
-    protected void ParallelChunkAction<R, R2>(ActionRR<R, R2> action) where R : struct, IComponentData where R2 : struct, IComponentData
+    protected void ParallelChunkAction<P>(Action1P<P> action) where P : struct, IComponentData
     {
         foreach (var archetype in World.archetypeManager.GetArchetypeForQuery(entityQuery.flag))
         {
-            
+            byte componentIndices_P = archetype.GetComponentIndice(entityQuery.components[0]);
+            Parallel.ForEach(archetype.listArchetypeChunks, Chunk =>
+            {
+                ComponentArray<P> componentArray_P = Chunk.GetComponentArray<P>(componentIndices_P);
+                for (int i = 0; i < Chunk.count; i++)
+                {
+                    action(componentArray_P.components[i]);
+                }
+            });
         }
     }
 
-    protected void ForEach<R, I>(ActionRI<R, I> action) where R : struct, IComponentData where I : struct, IComponentData
+    protected void ParallelChunkAction<P>(Action1P<P> action, Action1P<P> normalAction) where P : struct, IComponentData
     {
-        // if (!World.componentManager.HasComponentArray(entityQuery.components[0])) return;
-        // foreach (var item in World.archetypeManager.GetIDEntitiesForQuery(entityQuery.flag))
-        // {
-        //     ref R c1 = ref World.componentManager.GetComponent<R>(entityQuery.components[0], item);
-        //     ref R2 c2 = ref World.componentManager.GetComponent<R2>(entityQuery.components[1], item);
-        //     action(ref c1, ref c2);
-        // }
+        foreach (var archetype in World.archetypeManager.GetArchetypeForQuery(entityQuery.flag))
+        {
+            byte componentIndices_P = archetype.GetComponentIndice(entityQuery.components[0]);
+            Parallel.ForEach(archetype.listArchetypeChunks, Chunk =>
+            {
+                ComponentArray<P> componentArray_P = Chunk.GetComponentArray<P>(componentIndices_P);
+                for (int i = 0; i < Chunk.count; i++)
+                {
+                    action(componentArray_P.components[i]);
+                }
+            });
+            foreach (var Chunk in archetype.listArchetypeChunks)
+            {
+                ComponentArray<P> componentArray_R = Chunk.GetComponentArray<P>(componentIndices_P);
+                for (int i = 0; i < Chunk.count; i++)
+                {
+                    normalAction(componentArray_R.components[i]);
+                }
+            }
+        }
     }
+
+    #endregion
+
+    #region PP
+    /* =========================================== PP =========================================== */
+    protected void NormalAction<P, P2>(Action2P<P, P2> action) where P : struct, IComponentData where P2 : struct, IComponentData
+    {
+        foreach (var archetype in World.archetypeManager.GetArchetypeForQuery(entityQuery.flag))
+        {
+            byte componentIndices_P = archetype.GetComponentIndice(entityQuery.components[0]);
+            byte componentIndices_P2 = archetype.GetComponentIndice(entityQuery.components[1]);
+
+            foreach (var Chunk in archetype.listArchetypeChunks)
+            {
+                ComponentArray<P> componentArray_P = Chunk.GetComponentArray<P>(componentIndices_P);
+                ComponentArray<P2> componentArray_P2 = Chunk.GetComponentArray<P2>(componentIndices_P2);
+                for (int i = 0; i < Chunk.count; i++)
+                {
+                    action(componentArray_P.components[i], componentArray_P2.components[i]);
+                }
+            }
+        }
+    }
+
+    protected void ParallelChunkAction<P, P2>(Action2P<P, P2> action) where P : struct, IComponentData where P2 : struct, IComponentData
+    {
+        foreach (var archetype in World.archetypeManager.GetArchetypeForQuery(entityQuery.flag))
+        {
+            byte componentIndices_P = archetype.GetComponentIndice(entityQuery.components[0]);
+            byte componentIndices_P2 = archetype.GetComponentIndice(entityQuery.components[1]);
+            Parallel.ForEach(archetype.listArchetypeChunks, (Action<ArchetypeChunk>)(Chunk =>
+            {
+                ComponentArray<P> componentArray_P = Chunk.GetComponentArray<P>(componentIndices_P);
+                ComponentArray<P2> componentArray_P2 = Chunk.GetComponentArray<P2>(componentIndices_P2);
+                for (int i = 0; i < Chunk.count; i++)
+                {
+                    action(componentArray_P.components[i], componentArray_P2.components[i]);
+                }
+            }));
+        }
+    }
+
+    protected void ParallelChunkAction<P, P2>(Action2P<P, P2> action, Action2P<P, P2> normalAction) where P : struct, IComponentData where P2 : struct, IComponentData
+    {
+        foreach (var archetype in World.archetypeManager.GetArchetypeForQuery(entityQuery.flag))
+        {
+            byte componentIndices_P = archetype.GetComponentIndice(entityQuery.components[0]);
+            byte componentIndices_P2 = archetype.GetComponentIndice(entityQuery.components[1]);
+            Parallel.ForEach(archetype.listArchetypeChunks, Chunk =>
+            {
+                ComponentArray<P> componentArray_P = Chunk.GetComponentArray<P>(componentIndices_P);
+                ComponentArray<P2> componentArray_P2 = Chunk.GetComponentArray<P2>(componentIndices_P2);
+                for (int i = 0; i < Chunk.count; i++)
+                {
+                    action(componentArray_P.components[i], componentArray_P2.components[i]);
+                }
+            });
+            foreach (var Chunk in archetype.listArchetypeChunks)
+            {
+                ComponentArray<P> componentArray_R = Chunk.GetComponentArray<P>(componentIndices_P);
+                ComponentArray<P2> componentArray_R2 = Chunk.GetComponentArray<P2>(componentIndices_P2);
+                for (int i = 0; i < Chunk.count; i++)
+                {
+                    normalAction(componentArray_R.components[i], componentArray_R2.components[i]);
+                }
+            }
+        }
+    }
+
     /* =========================================== PP =========================================== */
     #endregion
 

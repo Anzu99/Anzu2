@@ -1,6 +1,6 @@
 public interface IComponentData
 {
-    Entity GetEntity();
-    void SetEntity(Entity value);
+    public Entity GetEntity();
+    public void SetEntity(Entity value);
     public void Start();
 }

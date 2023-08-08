@@ -2,6 +2,10 @@ using UnityEngine;
 using UnityEditor;
 public class SelectGameobject : MonoBehaviour
 {
+    private void Awake()
+    {
+        ShowFPS.ShowFPSHandle();
+    }
     GameObject selectedObject;
     private void Update()
     {

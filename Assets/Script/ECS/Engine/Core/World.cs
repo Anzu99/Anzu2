@@ -21,42 +21,66 @@ public partial class World : MonoBehaviour
 
     private void Awake()
     {
-        
-        ShowFPS.ShowFPSHandle();
         instance = this;
         archetypeManager = new ArchetypeManager();
         entityManager = new EntityManager(archetypeManager);
         systemManager = new SystemManager();
         OnStart();
     }
-
+    MoveSystem moveSystem;
+    [SerializeField] private bool az;
     private void OnStart()
     {
-        entityManager.CreateEntity(Component.TransformComponent, Component.MoveComponent);
+        moveSystem = new MoveSystem();
+        moveSystem.Start();
 
         // CreateSystem(ESystem.MoveSystem);
         // entityManager.LoadEntity(PathConfig.Entity.player1, null);
         // entityManager.CreateEntity(Component.InfoComponent, Component.MovementComponent);
-        // StartCoroutine(Spawn());
-        // IEnumerator Spawn()
-        // {
-        //     yield return new WaitForSeconds(.5f);
-        //     int index = 0;
-        //     while (index < 8000)
-        //     {
-        //         yield return null;
-        //         for (var i = 0; i < 20; i++)
-        //         {
-        //             entityManager.LoadEntity(PathConfig.Entity.player1, index.ToString());
-        //             index++;
-        //         }
-        //     }
-        // }
+
+        if (az)
+        {
+            StartCoroutine(Spawn());
+            IEnumerator Spawn()
+            {
+                yield return new WaitForSeconds(.5f);
+                int index = 0;
+                while (index < 4000)
+                {
+                    yield return null;
+                    for (var i = 0; i < 200; i++)
+                    {
+                        entityManager.CreateEntity(Component.TransformComponent, Component.MoveComponent);
+                        index++;
+                    }
+                }
+            }
+        }
+        else
+        {
+            StartCoroutine(Spawn());
+            IEnumerator Spawn()
+            {
+                yield return new WaitForSeconds(.5f);
+                int index = 0;
+                while (index < 4000)
+                {
+                    yield return null;
+                    for (var i = 0; i < 200; i++)
+                    {
+                        GameObject go = new GameObject(index.ToString());
+                        go.AddComponent<ObjMoveTest>();
+                        index++;
+                    }
+                }
+            }
+        }
 
     }
 
     private void Update()
     {
+        moveSystem.Update();
         UpdateSystem();
     }
 

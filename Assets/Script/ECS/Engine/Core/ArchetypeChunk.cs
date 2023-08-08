@@ -25,7 +25,7 @@ public class ArchetypeChunk
             CreateComponentArray(components[i], chunkSize, i);
         }
     }
-    public ComponentArray<T> GetComponentArray<T>(ushort componentidx) where T : struct, IComponentData
+    public ComponentArray<T> GetComponentArray<T>(byte componentidx) where T : struct, IComponentData
     {
         return (ComponentArray<T>)componentArrays[componentidx];
     }

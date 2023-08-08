@@ -7,7 +7,7 @@ public class Archetype
 {
     public Flag flag;
     [ShowInInspector] public List<ArchetypeChunk> listArchetypeChunks;
-    private ushort chunkSize = 5;
+    private ushort chunkSize = 100;
     private Component[] components;
     private Dictionary<Component, byte> componentIndices;
     public bool isEmpty => listArchetypeChunks.Count <= 0;
@@ -79,6 +79,8 @@ public class Archetype
             }
         }
     }
+
+    public byte GetComponentIndice(Component component) => componentIndices[component];
     public bool ContainFlag(Flag otherFlag)
     {
         return flag.ContainFlag(otherFlag);
