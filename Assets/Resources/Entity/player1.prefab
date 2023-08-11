@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3881903421579371143}
   - component: {fileID: 8222330911408035771}
-  - component: {fileID: 2727339082041878177}
+  - component: {fileID: 5099479834937768334}
   m_Layer: 0
   m_Name: player1
   m_TagString: Untagged
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2727339082041878177
+--- !u!114 &5099479834937768334
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -100,9 +100,7 @@ MonoBehaviour:
   serializationData:
     SerializedFormat: 2
     SerializedBytes: 
-    ReferencedUnityObjects:
-    - {fileID: 3881903421579371143}
-    - {fileID: 8222330911408035771}
+    ReferencedUnityObjects: []
     SerializedBytesString: 
     Prefab: {fileID: 0}
     PrefabModificationsReferencedUnityObjects: []
@@ -116,73 +114,16 @@ MonoBehaviour:
       Data: 2
     - Name: 
       Entry: 7
-      Data: 1|InfoComponent, Assembly-CSharp
-    - Name: speed
-      Entry: 4
-      Data: 23
-    - Name: laps
-      Entry: 3
-      Data: 1
-    - Name: xRange
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0.84
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: yRange
-      Entry: 7
-      Data: UnityEngine.Vector2, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: direction
-      Entry: 3
-      Data: 0
-    - Name: invert
-      Entry: 5
-      Data: false
-    - Name: 
-      Entry: 8
-      Data: 
-    - Name: 
-      Entry: 7
-      Data: 2|MovementComponent, Assembly-CSharp
-    - Name: idEntity
-      Entry: 3
-      Data: 0
-    - Name: currentPosition
-      Entry: 7
-      Data: UnityEngine.Vector3, UnityEngine.CoreModule
-    - Name: 
-      Entry: 4
-      Data: 0.39
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 4
-      Data: 0
-    - Name: 
-      Entry: 8
-      Data: 
+      Data: 1|TransformComponent, Assembly-CSharp
     - Name: transform
-      Entry: 10
-      Data: 0
-    - Name: spriteRenderer
-      Entry: 10
-      Data: 1
+      Entry: 6
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 7
+      Data: 2|InputComponent, Assembly-CSharp
     - Name: 
       Entry: 8
       Data: 
@@ -192,5 +133,5 @@ MonoBehaviour:
     - Name: 
       Entry: 8
       Data: 
-  flags: 0100000002000000
+  flags: 0300000001000000
   sellectedAddComponent: 0

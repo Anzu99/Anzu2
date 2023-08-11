@@ -2,23 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 
 public class ArchetypeManager
 {
     public List<Archetype> listArchetypes;
 
-
     public ArchetypeManager()
     {
         listArchetypes = new List<Archetype>();
     }
-
-    public void AddToArchetype(Entity entity)
-    {
-        entity.archetype.AddEntity(entity);
-    }
-
     public IEnumerable<Archetype> GetArchetypeForQuery(Flag flag)
     {
         foreach (var archetype in listArchetypes)
@@ -27,35 +19,25 @@ public class ArchetypeManager
         }
     }
 
-    public Archetype GetArchetype(Flag flag)
+    public Archetype GetArchetype(Flag flag, ushort chunkSize = 0)
     {
         foreach (var item in listArchetypes)
         {
             if (item.CompareArchetype(flag)) return item;
         }
-        return CreateArchetype(flag);
+        return CreateArchetype(flag, chunkSize);
     }
 
-    public void ChangeEntityArchetype(Entity entity, Flag newflag)
+    public void EntityChangeArchetype(Entity entity, Flag newFlag, ushort chunkSize = 0)
     {
+        EntityDataCache entityDataCopy = entity.archetype.GetEntityDataCopy(entity);
         entity.archetype.RemoveEntity(entity.idEntity);
-        GetArchetype(newflag).AddEntity(entity);
+        GetArchetype(newFlag, chunkSize).AddEntity(entity, entityDataCopy);
     }
 
-    public void RemoveEntity(Flag flag, Entity entity)
+    private Archetype CreateArchetype(Flag flag, ushort chunkSize)
     {
-        Archetype archetype = GetArchetype(flag);
-        archetype.RemoveEntity(entity.idEntity);
-        if (archetype.isEmpty)
-        {
-            listArchetypes.Remove(archetype);
-        }
-    }
-
-    /* =========================================== LOCAL FUNCTION =========================================== */
-    private Archetype CreateArchetype(Flag flag)
-    {
-        Archetype archetype = new Archetype(flag);
+        Archetype archetype = new Archetype(flag, chunkSize);
         listArchetypes.Add(archetype);
         return archetype;
     }

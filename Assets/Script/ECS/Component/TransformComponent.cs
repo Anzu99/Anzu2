@@ -2,23 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct TransformComponent : IComponentData
+public partial struct TransformComponent : IComponentData
 {
-    public Transform transform;
     private Entity entity;
-    public Entity GetEntity()
-    {
-        return entity;
-    }
+    public readonly Entity GetEntity() => entity;
+    public void SetEntity(Entity value) => entity = value;
 
-    public void SetEntity(Entity value)
-    {
-        entity = value;
-    }
-
+    public Transform transform;
     public void Start()
     {
         transform = entity.gameObject.transform;
     }
 }
-

@@ -12,11 +12,11 @@ public class ObjMoveTest : MonoBehaviour
     }
     private void Update()
     {
-        for (int i = 0; i < 200; i++)
+        for (int i = 0; i < 20; i++)
         {
             speed = 1;
-            speed *= 2;
-            speed = Mathf.Pow(speed, 10) / 10000000;
+            speed *= 21;
+            speed = Mathf.Pow(speed, 10) / 1000000000;
         }
         transform.position += Vector3.up * Time.deltaTime * speed;
     }

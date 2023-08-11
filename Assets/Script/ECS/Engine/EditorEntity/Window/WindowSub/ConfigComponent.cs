@@ -25,9 +25,9 @@ public class ConfigComponentWindow : OdinEditorWindow
     }
 
     private ComponentEditorData componentEditorData;
-    private List<ComponentComfigItem> listComponentComfigsItemBeforeUpdate;
+    private List<ComponentConfigItem> listComponentConfigsItemBeforeUpdate;
     [Searchable, HideLabel, OnValueChanged("OnChangeConfig")]
-    public List<ComponentComfigItem> listComponentComfigItems;
+    public List<ComponentConfigItem> listComponentConfigItems;
 
     ComponentTab componentTab;
     public void Initialize(ComponentTab componentTab)
@@ -38,26 +38,26 @@ public class ConfigComponentWindow : OdinEditorWindow
     {
         componentEditorData = new ComponentEditorData();
         componentEditorData.LoadData();
-        listComponentComfigItems = componentEditorData.componentConfigData.componentComfigItems;
-        listComponentComfigsItemBeforeUpdate = new List<ComponentComfigItem>(listComponentComfigItems);
+        listComponentConfigItems = componentEditorData.componentConfigData.componentConfigItems;
+        listComponentConfigsItemBeforeUpdate = new List<ComponentConfigItem>(listComponentConfigItems);
         base.OnEnable();
     }
 
     public void Update()
     {
-        listComponentComfigItems.Sort((student1, student2) => student1.order.CompareTo(student2.order));
+        listComponentConfigItems.Sort((student1, student2) => student1.order.CompareTo(student2.order));
     }
 
     public void OnChangeConfig()
     {
-        for (var i = 0; i < listComponentComfigItems.Count; i++)
+        for (var i = 0; i < listComponentConfigItems.Count; i++)
         {
-            if (listComponentComfigItems[i].component != listComponentComfigsItemBeforeUpdate[i].component)
+            if (listComponentConfigItems[i].component != listComponentConfigsItemBeforeUpdate[i].component)
             {
-                listComponentComfigItems[i].order = i;
+                listComponentConfigItems[i].order = i;
             }
         }
-        listComponentComfigsItemBeforeUpdate = new List<ComponentComfigItem>(listComponentComfigItems);
+        listComponentConfigsItemBeforeUpdate = new List<ComponentConfigItem>(listComponentConfigItems);
     }
 
 }

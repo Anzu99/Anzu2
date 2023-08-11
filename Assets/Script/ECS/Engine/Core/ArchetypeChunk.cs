@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 
-public class ArchetypeChunk
+public partial class ArchetypeChunk
 {
     public ushort count;
     private Dictionary<ushort, ushort> entityIndices;
@@ -22,7 +22,7 @@ public class ArchetypeChunk
 
         for (var i = 0; i < components.Length; i++)
         {
-            CreateComponentArray(components[i], chunkSize, i);
+            CreateComponentArray(components[i], chunkSize);
         }
     }
     public ComponentArray<T> GetComponentArray<T>(byte componentidx) where T : struct, IComponentData
@@ -35,6 +35,7 @@ public class ArchetypeChunk
         ComponentArray<T> componentArray = GetComponentArray<T>(componentidx);
         return ref componentArray.components[entityIndices[idEntity]];
     }
+
 
     public bool AddEntity(Entity entity)
     {
@@ -78,20 +79,15 @@ public class ArchetypeChunk
     {
         return entityIndices.ContainsKey(entityID);
     }
+}
 
-    private void CreateComponentArray(Component component, ushort size, int index)
+public struct EntityDataCache
+{
+    public Dictionary<Component, object> dictDataCopy;
+
+    public void AddData(Component component, object data)
     {
-        switch (component)
-        {
-            case Component.TransformComponent:
-                ComponentArray<TransformComponent> TransformComponents = new ComponentArray<TransformComponent>(size);
-                componentArrays.Add(TransformComponents);
-                break;
-            case Component.MoveComponent:
-                ComponentArray<MoveComponent> MoveComponents = new ComponentArray<MoveComponent>(size);
-                componentArrays.Add(MoveComponents);
-                break;
-        }
+        if(dictDataCopy == null)dictDataCopy = new Dictionary<Component, object>();
+        dictDataCopy.Add(component, data);
     }
-
 }

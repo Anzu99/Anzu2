@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using AV;
 using UnityEngine;
 
-[System.Serializable]
 public struct Flag
 {
     public int[] components;
@@ -13,9 +12,13 @@ public struct Flag
         components = new int[2];
     }
 
-    public void Copy(int[] value)
+    public void Copy(Flag otherFlag)
     {
-        components = value;
+        if (components == null) Init();
+        for (int i = 0; i < otherFlag.components.Length; i++)
+        {
+            components[i] = otherFlag.components[i];
+        }
     }
 
     public void Clear()
@@ -34,11 +37,18 @@ public struct Flag
     }
     public static Flag operator +(Flag a, Component b)
     {
-        return new Flag();
+        Flag tmp =new Flag();
+        tmp.Copy(a);
+        tmp.AddComponent(b);
+        return tmp;
     }
+
     public static Flag operator -(Flag a, Component b)
     {
-        return new Flag();
+        Flag tmp =new Flag();
+        tmp.Copy(a);
+        tmp.RemoveComponent(b);
+        return tmp;
     }
 
     public void AddComponent(Component eComponent)
@@ -69,17 +79,17 @@ public struct Flag
 
     public bool Equal(Flag value)
     {
-        return value.Equal(components);
+        return value.components.CompareFlags(components);
     }
 
-    private bool Equal(params int[] value)
-    {
-        for (var i = 0; i < value.Length; i++)
-        {
-            if (value[i] != components[i]) return false;
-        }
-        return true;
-    }
+    // private bool Equal(params int[] value)
+    // {
+    //     for (var i = 0; i < value.Length; i++)
+    //     {
+    //         if (value[i] != components[i]) return false;
+    //     }
+    //     return true;
+    // }
 
     public bool ContainComponent(Component eComponent)
     {

@@ -2,12 +2,12 @@ using System.Collections.Generic;
 public partial class SystemManager
 {
     List<SystemBase> listSystem;
-    Dictionary<ESystem, ushort> systemIndice;
+    Dictionary<ESystem, ushort> systemIndices;
     ushort count = 0;
     public SystemManager()
     {
         listSystem = new List<SystemBase>();
-        systemIndice = new Dictionary<ESystem, ushort>();
+        systemIndices = new Dictionary<ESystem, ushort>();
     }
 
     public partial void CreateSystem(params ESystem[] systems);
@@ -16,8 +16,8 @@ public partial class SystemManager
     {
         foreach (var item in systems)
         {
-            listSystem.RemoveAt(systemIndice[item]);
-            systemIndice.Remove(item);
+            listSystem.RemoveAt(systemIndices[item]);
+            systemIndices.Remove(item);
         }
     }
 
@@ -25,7 +25,7 @@ public partial class SystemManager
     {
         foreach (var item in systems)
         {
-            listSystem[systemIndice[item]].active = active;
+            listSystem[systemIndices[item]].active = active;
         }
     }
 

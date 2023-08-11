@@ -30,7 +30,6 @@ public class ComponentEditorData
 
     public void CreateComponentConfigData()
     {
-        int defaultCapacity = 32;
         int defaultOrder = 1;
         componentConfigData = new ComponentConfigData();
 
@@ -38,21 +37,19 @@ public class ComponentEditorData
         for (var i = 1; i < Enum.GetNames(typeof(Component)).Length; i++)
         {
             componentTmp = AV_ENUM_EXTENSION.Next(componentTmp);
-            ComponentComfigItem componentConfigItem = new ComponentComfigItem()
+            ComponentConfigItem componentConfigItem = new ComponentConfigItem()
             {
                 component = componentTmp,
                 order = defaultOrder,
-                capacity = defaultCapacity
             };
-            componentConfigData.componentComfigItems.Add(componentConfigItem);
+            componentConfigData.componentConfigItems.Add(componentConfigItem);
         }
         Save();
     }
 
     public void FixComponentConfigData()
     {
-        int defaultCapacity = 32;
-        int defaultOrder = componentConfigData.componentComfigItems[^1].order;
+        int defaultOrder = componentConfigData.componentConfigItems[^1].order;
 
         Component componentTmp = Component.None;
         for (var i = 1; i < Enum.GetNames(typeof(Component)).Length; i++)
@@ -61,19 +58,18 @@ public class ComponentEditorData
 
             if (!CheckExistComponentConfig(componentTmp))
             {
-                ComponentComfigItem componentConfigItem = new ComponentComfigItem()
+                ComponentConfigItem componentConfigItem = new ComponentConfigItem()
                 {
                     component = componentTmp,
                     order = defaultOrder++,
-                    capacity = defaultCapacity
                 };
-                componentConfigData.componentComfigItems.Add(componentConfigItem);
+                componentConfigData.componentConfigItems.Add(componentConfigItem);
             }
         }
 
         bool CheckExistComponentConfig(Component component)
         {
-            foreach (var item in componentConfigData.componentComfigItems)
+            foreach (var item in componentConfigData.componentConfigItems)
             {
                 if (item.component == component) return true;
             }
@@ -89,11 +85,11 @@ public class ComponentEditorData
         string[] componentNames = DirectoryUtility.GetAllFileInFolderAndChild(filePath, "cs");
         List<string> listComponentNames = new List<string>(componentNames);
 
-        for (var i = 0; i < componentConfigData.componentComfigItems.Count; i++)
+        for (var i = 0; i < componentConfigData.componentConfigItems.Count; i++)
         {
-            if (!listComponentNames.Contains(componentConfigData.componentComfigItems[i].component.ToString()))
+            if (!listComponentNames.Contains(componentConfigData.componentConfigItems[i].component.ToString()))
             {
-                componentConfigData.componentComfigItems.Remove(componentConfigData.componentComfigItems[i--]);
+                componentConfigData.componentConfigItems.Remove(componentConfigData.componentConfigItems[i--]);
             }
         }
 
@@ -101,9 +97,9 @@ public class ComponentEditorData
 
     private void SortOrder()
     {
-        for (var i = 0; i < componentConfigData.componentComfigItems.Count; i++)
+        for (var i = 0; i < componentConfigData.componentConfigItems.Count; i++)
         {
-            componentConfigData.componentComfigItems[i].order = i;
+            componentConfigData.componentConfigItems[i].order = i;
         }
         Save();
     }
@@ -132,7 +128,7 @@ public class ComponentEditorData
         }
         else
         {
-            Debug.LogError("Create: " + path);
+            Debug.Log("Create: " + path);
             return string.Empty;
         }
     }
@@ -141,19 +137,19 @@ public class ComponentEditorData
 [Serializable]
 public class ComponentConfigData
 {
-    public List<ComponentComfigItem> componentComfigItems;
+    public List<ComponentConfigItem> componentConfigItems;
 
     public ComponentConfigData()
     {
-        componentComfigItems = new List<ComponentComfigItem>();
+        componentConfigItems = new List<ComponentConfigItem>();
     }
 
 }
 [Serializable]
-public class ComponentComfigItem
+public class ComponentConfigItem
 {
     [ReadOnly] public Component component;
     public int order;
-    public int capacity;
+    public bool foldout = true;
 }
 #endif

@@ -26,4 +26,55 @@ public class Entity
     {
         return ref archetype.GetComponent<T>(component, idEntity);
     }
+
+    public void SetComponent<T>(T value, Component component) where T : struct, IComponentData
+    {
+
+    }
+
+    public void AddComponent(Component component, ushort chunkSize = 0)
+    {
+        World.AddEngineUpdateAction(Action);
+        void Action()
+        {
+            Flag newFlag = new Flag();
+            newFlag.Copy(archetype.flag);
+            newFlag.AddComponent(component);
+            World.archetypeManager.EntityChangeArchetype(this, newFlag, chunkSize);
+        }
+    }
+
+    public void RemoveComponent(Component component, ushort chunkSize = 0)
+    {
+        World.AddEngineUpdateAction(Action);
+        void Action()
+        {
+            Flag newFlag = new Flag();
+            newFlag.Copy(archetype.flag);
+            newFlag.RemoveComponent(component);
+            World.archetypeManager.EntityChangeArchetype(this, newFlag, chunkSize);
+        }
+    }
+
+    public void SetActive(bool active)
+    {
+        gameObject.SetActive(active);
+        
+    }
+
+    public void DestroyEntity()
+    {
+        World.AddEngineUpdateAction(Action);
+        void Action()
+        {
+            archetype.RemoveEntity(idEntity);
+            Object.Destroy(gameObject);
+        }
+    }
+
+    public Entity Instance()
+    {
+        Entity entity = null;
+        return entity;
+    }
 }

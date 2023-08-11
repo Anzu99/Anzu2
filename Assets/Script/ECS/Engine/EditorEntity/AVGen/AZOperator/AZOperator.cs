@@ -17,8 +17,13 @@ public class AZOperator : MonoBehaviour
     }
 
     [Button(ButtonSizes.Large), GUIColor(.5f, .5f, .5f), PropertyOrder(1)]
-    private void GenerateComponentManager()
+    private void GenerateArchetype()
     {
-        ANZU_Generate.GenerateComponentManager();
+        ANZU_Generate.GenerateArchetype();
+    }
+    [Button(ButtonSizes.Large), GUIColor(.5f, .5f, .5f), PropertyOrder(1)]
+    private void GenerateArchetypeChunk()
+    {
+        ANZU_Generate.GenerateArchetypeChunk();
     }
 }

@@ -23,7 +23,6 @@ public class ComponentTab
     [PropertySpace(2), Button(ButtonSizes.Large), GUIColor(.5f, .5f, .5f), PropertyOrder(1)]
     public void Fix()
     {
-        ANZU_Generate.GenerateComponentManager();
         ComponentEditorData componentEditorData = new ComponentEditorData();
         componentEditorData.LoadData();
         componentEditorData.FixComponentConfigData();

@@ -8,14 +8,22 @@ public partial class SystemManager
             SystemBase systemBase = null;
             switch (item)
             {
+                case ESystem.InputSystem:
+                    systemBase = new InputSystem();
+                    break;
+                case ESystem.MoveSystem:
+                    systemBase = new MoveSystem();
+                    break;
             }
             systemBase.Start();
             listSystem.Add(systemBase);
-            systemIndice.Add(item, count++);
+            systemIndices.Add(item, count++);
         }
     }
 }
 
 public enum ESystem
 {
+    InputSystem,
+    MoveSystem,
 }

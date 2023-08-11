@@ -52,5 +52,10 @@
         "temp/":true,
         "Temp/":true
     },
-    "dotnet.defaultSolution": "Anzu2.sln"
+    "dotnet.defaultSolution": "Anzu2.sln",
+    "cSpell.words": [
+        "ANZU",
+        "Behaviour",
+        "Sirenix"
+    ]
 }

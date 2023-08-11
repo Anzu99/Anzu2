@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public static class ExtensionECS
 {
     public static bool CompareFlags(this int[] arr, int[] arr2)
@@ -34,5 +36,4 @@ public static class ExtensionECS
     {
         return (val | otherVal) == val;
     }
-
 }

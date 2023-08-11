@@ -8,22 +8,22 @@ public class ANZU_Generate
 {
     public static void GenerateEntityEditor()
     {
-        // ComponentEditorData componentEditorData = new ComponentEditorData();
-        // componentEditorData.LoadData();
-        // string[] strs = new string[componentEditorData.componentConfigData.componentComfigItems.Count];
-        // for (var i = 0; i < strs.Length; i++)
-        // {
-        //     strs[i] = componentEditorData.componentConfigData.componentComfigItems[i].component.ToString();
-        // }
-        // string[] componentNames = strs;
-        string filePath = $"Assets/Script/ECS/Component";
-        string[] componentNames = DirectoryUtility.GetAllFileInFolderAndChild(filePath, "cs");
+        ComponentEditorData componentEditorData = new ComponentEditorData();
+        componentEditorData.LoadData();
+        string[] strs = new string[componentEditorData.componentConfigData.componentConfigItems.Count];
+        for (var i = 0; i < strs.Length; i++)
+        {
+            strs[i] = componentEditorData.componentConfigData.componentConfigItems[i].component.ToString();
+        }
+        string[] componentNames = strs;
+        
         // string filePath = $"Assets/Script/ECS/Component";
         // string[] componentNames = DirectoryUtility.GetAllFileInFolderAndChild(filePath, "cs");
 
 
         string module1 = $@"";
         string module2 = $@"";
+        string module3 = $@"";
 
         string content3 = $@"";
 
@@ -34,7 +34,7 @@ public class ANZU_Generate
             string isShowIf = $"\"isShow{item}\"";
 
             string content1 = $@"
-    [ColoredFoldoutGroup(Component.{item}, 0, 1, 0, 1), HideLabel, PropertyOrder({count++/* componentEditorData.componentConfigData.componentComfigItems[count++].order */})]
+    [ColoredFoldoutGroup(Component.{item}, 0, 1, 0, 1), HideLabel, PropertyOrder({/* count++ */componentEditorData.componentConfigData.componentConfigItems[count++].order})]
     [ShowIf({isShowIf}, true), ShowInInspector]
     public {item} {item}
     {{
@@ -58,23 +58,23 @@ public class ANZU_Generate
         }
 
 
-        string module3 = $@"
-    public partial void SetUpDataPrefab(EntityPrefab entityPrefab)
-    {{
-        for (var i = 0; i < entityPrefab.flags.Count; i++)
-        {{
-            SetData(i);
-        }}
-        Destroy(entityPrefab);
-        void SetData(int index)
-        {{
-            switch (entityPrefab.flags[index])
-            {{
-                {content3}
-            }}
-        }}
-    }}
-        ";
+    //     string module3 = $@"
+    // public partial void SetUpDataPrefab(EntityPrefab entityPrefab)
+    // {{
+    //     for (var i = 0; i < entityPrefab.flags.Count; i++)
+    //     {{
+    //         SetData(i);
+    //     }}
+    //     Destroy(entityPrefab);
+    //     void SetData(int index)
+    //     {{
+    //         switch (entityPrefab.flags[index])
+    //         {{
+    //             {content3}
+    //         }}
+    //     }}
+    // }}
+    //     ";
 
 
         string scriptContent = $@"
@@ -92,15 +92,14 @@ public partial class EntityEditor : MonoBehaviour
         File.WriteAllText(scriptPath, scriptContent);
         AssetDatabase.Refresh();
     }
-
     public static void GenerateEntityPrefab()
     {
         ComponentEditorData componentEditorData = new ComponentEditorData();
         componentEditorData.LoadData();
-        string[] strs = new string[componentEditorData.componentConfigData.componentComfigItems.Count];
+        string[] strs = new string[componentEditorData.componentConfigData.componentConfigItems.Count];
         for (var i = 0; i < strs.Length; i++)
         {
-            strs[i] = componentEditorData.componentConfigData.componentComfigItems[i].component.ToString();
+            strs[i] = componentEditorData.componentConfigData.componentConfigItems[i].component.ToString();
         }
         string[] componentNames = strs;
 
@@ -139,7 +138,7 @@ public partial class EntityEditor : MonoBehaviour
             string isShowIf = $"\"isShow{item}\"";
 
             content1 += $@"
-    [ColoredFoldoutGroup(Component.{item}, .5f, .5f, .5f, 1), HideLabel, PropertyOrder({componentEditorData.componentConfigData.componentComfigItems[count++].order})]
+    [ColoredFoldoutGroup(Component.{item}, .5f, .5f, .5f, 1), HideLabel, PropertyOrder({componentEditorData.componentConfigData.componentConfigItems[count++].order})]
     [ShowIf({isShowIf}, true), ShowInInspector]
     private {item} {item};
     ";
@@ -260,6 +259,11 @@ public partial class EntityEditor : MonoBehaviour
             {{{content10}
             }}
         }}
+
+        ComponentEditorData componentEditorData = new ComponentEditorData();
+        ComponentConfigData componentConfigData = ColoredFoldoutGroupAttributeDrawer.componentConfigData;
+        componentEditorData.componentConfigData = componentConfigData;
+        componentEditorData.Save();
     }}
     ";
         module11 = $@"
@@ -305,27 +309,16 @@ public partial class EntityPrefab : SerializedMonoBehaviour
         File.WriteAllText(scriptPath, scriptContent);
         AssetDatabase.Refresh();
     }
-
-    public static void GenerateComponentManager()
+    public static void GenerateArchetype()
     {
         string filePath = $"Assets/Script/ECS/Component";
         string[] componentNames = DirectoryUtility.GetAllFileInFolderAndChild(filePath, "cs");
 
         string module1 = $@"";
         string module2 = $@"";
-        string module3 = $@"";
-        string module4 = $@"";
-        string module5 = $@"";
-        string module6 = $@"";
-
-
 
         string content1 = $@"";
         string content2 = $@"";
-        string content3 = $@"";
-        string content4 = $@"";
-        string content5 = $@"";
-        string content6 = $@"";
 
         foreach (var item in componentNames)
         {
@@ -334,91 +327,112 @@ public partial class EntityPrefab : SerializedMonoBehaviour
 
             content1 += $@"
             case Component.{item}:
-                CreateComponentArray<{item}>(_maxCapacity, flag);
+                GetComponent<{item}>(component, entity.idEntity) = ({item})data;
                 break;";
-            content2 += $@"
-            case Component.{item}:
-                RemoveComponent<{item}>(component, idEntity);
-                break;";
-            content3 += $@"Component.{item} => 32,
-            ";
-            content4 += $@"
-            case Component.{item}:
-                ComponentArray<{item}> {item}s = dicsComponent[flag] as ComponentArray<{item}>;
-                {item}s.CreateComponent(idEntity);
-                break;";
-            content5 += $@"
-            case Component.{item}:
-                ComponentArray<{item}> {item}s = dicsComponent[component] as ComponentArray<{item}>;
-                {item}s.InitializeComponent(idEntity);
-                break;";
-            content6 += $@"
-    {item},";
+            content2 += $@"{item},
+    ";
         }
 
 
         module1 = $@"
-    public void CreateComponentArray(Component flag)
+    public void CopyComponentData(EntityDataCache entityDataCache, Entity entity)
     {{
-        ushort _maxCapacity = GetCapacity(flag);
-        switch (flag)
+        foreach (var data in entityDataCache.dictDataCopy)
+        {{
+             if (componentIndices.ContainsKey(data.Key))
+             {{
+                Handle(data.Key, data.Value);
+             }}
+        }}
+        void Handle(Component component, object data)
+        {{
+            switch (component)
+            {{{content1}
+            }}
+        }}
+       
+    }}
+        ";
+
+        module2 = $@"
+public enum Component
+{{
+    None,
+    {content2}
+}}";
+
+    string scriptContent = $@"
+public partial class Archetype
+{{{module1}
+}}
+{module2}
+";
+
+        string scriptPath = $"Assets/Script/ECS/Engine/EditorEntity/Generate/Archetype.cs";
+        File.WriteAllText(scriptPath, scriptContent);
+        AssetDatabase.Refresh();
+    }
+    public static void GenerateArchetypeChunk()
+    {
+        string filePath = $"Assets/Script/ECS/Component";
+        string[] componentNames = DirectoryUtility.GetAllFileInFolderAndChild(filePath, "cs");
+
+        string module1 = $@"";
+        string module2 = $@"";
+
+        string content1 = $@"";
+        string content2 = $@"";
+
+        foreach (var item in componentNames)
+        {
+            string isShow_NAME = $"isShow{item}";
+            string isShowIf = $"\"isShow{item}\"";
+
+            content1 += $@"
+            case Component.{item}:
+                ComponentArray<{item}> {item}s = new ComponentArray<{item}>(size);
+                componentArrays.Add({item}s);
+                break;";
+
+            content2 += $@"
+            case Component.{item}:
+                ComponentArray<{item}> {item}s = GetComponentArray<{item}>(componentIdx);
+                return {item}s.components[entityIndices[idEntity]];";
+        }
+
+
+        module1 = $@"
+    private void CreateComponentArray(Component component, ushort size)
+    {{
+        switch (component)
         {{{content1}
         }}
     }}
         ";
 
         module2 = $@"
-    public void RemoveComponent(Component component, ushort idEntity)
+    public object GetComponent(Component component, byte componentIdx, ushort idEntity)
     {{
         switch (component)
         {{{content2}
         }}
+        return null;
     }}
-        ";
-
-        module3 = $@"
-    public ushort GetCapacity(Component flag)
-    {{
-        return flag switch
-        {{  
-            {content3}_ => 32
-        }};
-    }}
-        ";
-
-        module4 = $@"
-    public void CreateComponent(Component flag, ushort idEntity)
-    {{
-        switch (flag)
-        {{{content4}
-        }}
-    }}
-        ";
-
-        module5 = $@"
-    public void InitializeComponent(Component component, ushort idEntity)
-    {{
-        switch (component)
-        {{{content5}
-        }}
-    }}";
-
-        module6 = $@"
-[System.Serializable]
-public enum Component
-{{
-    None,{content6}
-}}
         ";
 
         string scriptContent = $@"
-public partial class ComponentManager
-{{{module1}{module2}{module3}{module4}{module5}
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public partial class ArchetypeChunk
+{{{module1}
+{module2}
 }}
-{module6}
 ";
 
-        string scriptPath = $"Assets/Script/ECS/Engine/EditorEntity/Generate/ComponentManager.cs";
+        string scriptPath = $"Assets/Script/ECS/Engine/EditorEntity/Generate/ArchetypeChunk.cs";
         File.WriteAllText(scriptPath, scriptContent);
         AssetDatabase.Refresh();
     }
@@ -440,12 +454,20 @@ using System.Collections.Generic;
 using UnityEngine;
 public struct {item}Component : IComponentData
 {{
-    private ushort idEntity;
-    public ushort IdEntity {{ get => idEntity; set => idEntity = value; }}
-
-    public void Initialize()
+    private Entity entity;
+    public Entity GetEntity()
     {{
-        
+        return entity;
+    }}
+
+    public void SetEntity(Entity value)
+    {{
+        this.entity = value;
+    }}
+
+    public void Start()
+    {{
+
     }}
 }}";
             string scriptPath = $"{filePath}/{item}Component.cs";
@@ -470,7 +492,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class {item}System : Systembase
+public class {item}System : SystemBase
 {{
     public override void Start()
     {{
@@ -520,7 +542,7 @@ public partial class SystemManager
             }}
             systemBase.Start();
             listSystem.Add(systemBase);
-            systemIndice.Add(item, count++);
+            systemIndices.Add(item, count++);
         }}
     }}
 }}

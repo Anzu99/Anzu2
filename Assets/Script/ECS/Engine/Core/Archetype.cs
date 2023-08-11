@@ -3,16 +3,17 @@ using Sirenix.OdinInspector;
 using Unity.Collections;
 using Unity.Jobs;
 
-public class Archetype
+public partial class Archetype
 {
     public Flag flag;
     [ShowInInspector] public List<ArchetypeChunk> listArchetypeChunks;
-    private ushort chunkSize = 100;
-    private Component[] components;
-    private Dictionary<Component, byte> componentIndices;
-    public bool isEmpty => listArchetypeChunks.Count <= 0;
-    public Archetype(Flag flag)
+    private readonly ushort chunkSize = 4;
+    private readonly Component[] components;
+    private readonly Dictionary<Component, byte> componentIndices;
+    public bool IsEmpty => listArchetypeChunks.Count <= 0;
+    public Archetype(Flag flag, ushort chunkSize)
     {
+        this.chunkSize = chunkSize == 0 ? ConfigCapacity.defaultChunkSize : chunkSize;
         componentIndices = new Dictionary<Component, byte>();
         listArchetypeChunks = new List<ArchetypeChunk>();
         this.flag = flag;
@@ -27,10 +28,30 @@ public class Archetype
 
     public void AddEntity(Entity entity)
     {
+        if (listArchetypeChunks.Count == 0) CreateNewChunk();
         if (!listArchetypeChunks[^1].AddEntity(entity))
         {
             CreateNewChunk();
             AddEntity(entity);
+        }
+        else
+        {
+            entity.archetype = this;
+        }
+    }
+
+    public void AddEntity(Entity entity, EntityDataCache entityDataCache)
+    {
+        if (listArchetypeChunks.Count == 0) CreateNewChunk();
+        if (!listArchetypeChunks[^1].AddEntity(entity))
+        {
+            CreateNewChunk();
+            AddEntity(entity, entityDataCache);
+        }
+        else
+        {
+            entity.archetype = this;
+            CopyComponentData(entityDataCache, entity);
         }
     }
 
@@ -40,16 +61,6 @@ public class Archetype
         listArchetypeChunks.Add(archetypeChunk);
     }
 
-    public ComponentArray<T>[] GetComponentArrayData<T>(Component component) where T : struct, IComponentData
-    {
-        int count = listArchetypeChunks.Count;
-        ComponentArray<T>[] componentArrays = new ComponentArray<T>[count];
-        for (int i = 0; i < count; i++)
-        {
-            componentArrays[i] = listArchetypeChunks[i].GetComponentArray<T>(componentIndices[component]);
-        }
-        return componentArrays;
-    }
 
     public ref T GetComponent<T>(Component component, ushort idEntity) where T : struct, IComponentData
     {
@@ -64,6 +75,18 @@ public class Archetype
         return ref listArchetypeChunks[0].GetComponent<T>(componentIndices[component], idEntity);
     }
 
+    public EntityDataCache GetEntityDataCopy(Entity entity)
+    {
+        ArchetypeChunk archetypeChunk = GetArchetypeChunk(entity);
+        EntityDataCache entityDataCache = new EntityDataCache();
+        foreach (var component in componentIndices)
+        {
+            object o = archetypeChunk.GetComponent(component.Key, component.Value, entity.idEntity);
+            entityDataCache.AddData(component.Key, o);
+        }
+        return entityDataCache;
+    }
+
     public void RemoveEntity(ushort idEntity)
     {
         foreach (var item in listArchetypeChunks)
@@ -72,15 +95,27 @@ public class Archetype
             {
                 if (item.isEmpty)
                 {
-                    // item.DestroyChunk();
                     listArchetypeChunks.Remove(item);
+                    if (listArchetypeChunks.Count == 0)
+                    {
+                        World.archetypeManager.listArchetypes.Remove(this);
+                    }
                 }
                 break;
             }
         }
     }
 
-    public byte GetComponentIndice(Component component) => componentIndices[component];
+    public ArchetypeChunk GetArchetypeChunk(Entity entity)
+    {
+        foreach (var chunk in listArchetypeChunks)
+        {
+            if (chunk.ContainEntity(entity.idEntity)) return chunk;
+        }
+        return null;
+    }
+
+    public byte GetComponentIndices(Component component) => componentIndices[component];
     public bool ContainFlag(Flag otherFlag)
     {
         return flag.ContainFlag(otherFlag);
@@ -90,4 +125,3 @@ public class Archetype
         return flag.Equal(otherFlag);
     }
 }
-

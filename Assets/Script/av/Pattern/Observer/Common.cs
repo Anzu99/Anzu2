@@ -7,8 +7,6 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 
-namespace TitleMap
-{
     public class Common
     {
 
@@ -81,4 +79,3 @@ namespace TitleMap
             if (!condition) throw new UnityException(string.Format(format, args));
         }
     }
-}

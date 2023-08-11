@@ -8,12 +8,32 @@ using UnityEngine;
 
 public class ColoredFoldoutGroupAttributeDrawer : OdinGroupDrawer<ColoredFoldoutGroupAttribute>
 {
-    private LocalPersistentContext<bool> isExpanded;
+    public static ComponentConfigData componentConfigData;
+    private bool isExpanded;
+    bool isExpandedCache;
     protected override void Initialize()
     {
-        this.isExpanded = this.GetPersistentValue<bool>(
-            "ColoredFoldoutGroupAttributeDrawer.isExpanded",
-            GeneralDrawerConfig.Instance.ExpandFoldoutByDefault);
+        if (componentConfigData == null)
+        {
+            ComponentEditorData componentEditorData = new ComponentEditorData();
+            componentEditorData.LoadData();
+            componentConfigData = componentEditorData.componentConfigData;
+        }
+
+        this.isExpanded = CheckFoldout(Attribute.component);
+        isExpandedCache = isExpanded;
+    }
+
+    private bool CheckFoldout(Component component)
+    {
+        foreach (var item in componentConfigData.componentConfigItems)
+        {
+            if (item.component == component)
+            {
+                return item.foldout;
+            }
+        }
+        return true;
     }
 
     Rect rect;
@@ -25,10 +45,15 @@ public class ColoredFoldoutGroupAttributeDrawer : OdinGroupDrawer<ColoredFoldout
         CheckContextClick();
         CheckClickOutsideWindowContex();
         GUIHelper.PopColor();
-        this.isExpanded.Value = SirenixEditorGUI.Foldout(this.isExpanded.Value, label);
+        this.isExpanded = SirenixEditorGUI.Foldout(isExpanded, label);
+        if (isExpandedCache != isExpanded)
+        {
+            isExpandedCache = isExpanded;
+            SetFoldoutEditorData(isExpandedCache);
+        }
         SirenixEditorGUI.EndBoxHeader();
 
-        if (SirenixEditorGUI.BeginFadeGroup(this, this.isExpanded.Value))
+        if (SirenixEditorGUI.BeginFadeGroup(this, isExpanded))
         {
             for (int i = 0; i < this.Property.Children.Count; i++)
             {
@@ -38,6 +63,17 @@ public class ColoredFoldoutGroupAttributeDrawer : OdinGroupDrawer<ColoredFoldout
 
         SirenixEditorGUI.EndFadeGroup();
         SirenixEditorGUI.EndBox();
+    }
+
+    private void SetFoldoutEditorData(bool foldout)
+    {
+        foreach (var item in componentConfigData.componentConfigItems)
+        {
+            if (item.component == Attribute.component)
+            {
+                item.foldout = foldout;
+            }
+        }
     }
     EntityContextOperator entityContextOperator;
     Rect entityContextOperatorRect;
